@@ -54,12 +54,6 @@
             <version>1.16.18</version>
             <scope>provided</scope>
         </dependency>
-        <!-- UI components -->
-		<dependency>
-			<groupId>de.alpharogroup</groupId>
-			<artifactId>swing-components</artifactId>
-			<version>4.24.0</version>
-		</dependency>
 		<!-- CLI -->
         <dependency>
             <groupId>com.beust</groupId>
