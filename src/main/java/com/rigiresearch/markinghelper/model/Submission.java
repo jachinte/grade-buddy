@@ -38,7 +38,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @Getter
 @RequiredArgsConstructor
-@ToString(of = {"studentId", "marks"})
+@ToString(of = {"studentId", "result"})
 public final class Submission {
 
     /**

@@ -25,6 +25,7 @@ import com.rigiresearch.markinghelper.model.Result;
 import com.rigiresearch.markinghelper.model.Submission;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -35,7 +36,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 
 /**
- * TODO
+ * This class is in charge of coordinating the automated marking.
  * @author Miguel Jimenez (miguel@uvic.ca)
  * @date 2017-10-13
  * @version $Id$
@@ -44,7 +45,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @AllArgsConstructor
 @Getter
-public final class Marker {
+public final class AutomatedMarking {
 
     /**
      * The collection of submissions.
@@ -52,39 +53,55 @@ public final class Marker {
     private final Iterable<Submission> submissions;
 
     /**
-     * The shell script to run over the submissions.
+     * The shell scripts (one per assignment part) to run over the submissions.
      */
-    private final File script;
+    private final List<File> scripts;
 
     /**
      * Marks all of the submissions.
      */
-    public void markAll() {
-        this.submissions.forEach(submission -> {
-            try {
-                submission.result(this.mark(submission.directory()));
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e.getCause());
-            }
-        });
+    public void mark() throws Exception {
+        for (Submission submission : this.submissions) {
+            submission.result(this.markingResult(submission.directory()));
+        }
+    }
+
+    /**
+     * Runs the assignment shell scripts on the specified submission and return
+     * the sum of the corresponding marks.
+     * @param submission The submission to mark
+     * @return The marking result
+     * @throws Exception If something bad happens when running the script
+     */
+    public Result markingResult(final File submission) throws Exception {
+        double marks = 0d;
+        String feedback = new String();
+        for (File script : this.scripts) {
+            final Result r = this.markingResult(submission, script);
+            marks += r.marks();
+            feedback += String.format("%s\n", r.feedback());
+        }
+        return new Result(marks, feedback);
     }
 
     /**
      * Runs the shell script on the specified submission and return the
      * corresponding marks.
-     * @param submission The submission
+     * @param submission The submission to mark
+     * @param script The marking script
      * @return The marking result
      * @throws Exception If something bad happens when running the script
      */
-    public Result mark(final File submission) throws Exception {
+    public Result markingResult(final File submission, final File script)
+        throws Exception {
         double marks = 0d;
         String feedback = "";
         try {
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             final ByteArrayOutputStream errOutput = new ByteArrayOutputStream();
             final int exitCode = new ProcessExecutor()
-                .directory(this.script.getParentFile())
-                .command("sh", this.script.getName(), submission.getAbsolutePath())
+                .directory(script.getParentFile())
+                .command("sh", script.getName(), submission.getAbsolutePath())
                 .timeout(60, TimeUnit.SECONDS)
                 .redirectOutput(output)
                 .redirectError(errOutput)

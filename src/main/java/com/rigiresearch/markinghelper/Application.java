@@ -24,15 +24,14 @@ package com.rigiresearch.markinghelper;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.rigiresearch.markinghelper.io.IdProvider;
-import com.rigiresearch.markinghelper.io.Marker;
+import com.rigiresearch.markinghelper.io.AutomatedMarking;
+import com.rigiresearch.markinghelper.io.FileSubmissionProvider;
 import com.rigiresearch.markinghelper.model.CsvReport;
 import com.rigiresearch.markinghelper.model.Submission;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,7 +67,7 @@ public class Application implements Runnable {
         required = true,
         order = 2
     )
-    private String markingScript;
+    private List<String> markingScripts = new ArrayList<>();
 
     @Parameter(
         names = {"--naming-script", "-n"},
@@ -99,6 +98,10 @@ public class Application implements Runnable {
     )
     private boolean help = false;
 
+    /**
+     * Main method.
+     * @param args This program's arguments
+     */
     public static void main(String[] args) {
         Application app = new Application();
         try {
@@ -122,41 +125,50 @@ public class Application implements Runnable {
         app.run();
     }
 
+    /**
+     * Validates that all input paths exist.
+     */
+    public void validateArguments() {
+        final List<String> paths = new ArrayList<>();
+        paths.add(this.directory);
+        paths.add(this.namingScript);
+        paths.addAll(this.markingScripts);
+        paths.stream().forEach(path -> {
+            if (!new File(path).exists()) {
+                System.err.printf("Input path '%s' does not exist\n", path);
+                System.exit(3);
+            }
+        });
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
     @Override
     public void run() {
-        // list submission directories filtering out exclusions
-        final File[] directories = new File(this.directory).listFiles(file -> {
-            return file.isDirectory() &&
-                !file.getName().matches(this.exclusionRegexp);
-        });
-        // map directories to submission instances
-        final Iterable<Submission> submissions = Stream.of(directories)
-            .map(directory -> {
-                final Submission submission = new Submission(directory);
-                try {
-                    submission.studentId(
-                        new IdProvider(
-                            directory,
-                            new File(this.namingScript)
-                        ).studentId()
-                    );
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                    System.exit(3);
-                }
-                return submission;
-            })
-            .collect(Collectors.toList());
-        final Marker marker = new Marker(submissions, new File(this.markingScript));
-        if (this.ui) {
-            // new MarkingWindow(marker);
-            System.out.println("Openning UI for semi-automatic grading");
-        } else {
-            marker.markAll();
-            System.out.println(new CsvReport(submissions).report());
+        validateArguments();
+        Iterable<Submission> submissions = new FileSubmissionProvider(
+            new File(this.directory),
+            this.exclusionRegexp,
+            new File(this.namingScript)
+        ).submissions();
+        final AutomatedMarking marker = new AutomatedMarking(
+            submissions,
+            this.markingScripts.stream()
+                .map(script -> new File(script))
+                .collect(Collectors.toList())
+        );
+        try {
+            if (this.ui) {
+                // new MarkingWindow(marker);
+                System.out.println("Openning UI for semi-automatic grading");
+            } else {
+                marker.mark();
+                System.out.println(new CsvReport(submissions).report());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(5);
         }
     }
 
