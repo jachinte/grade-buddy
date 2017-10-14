@@ -28,6 +28,7 @@ import com.rigiresearch.markinghelper.io.AutomatedMarking;
 import com.rigiresearch.markinghelper.io.FileSubmissionProvider;
 import com.rigiresearch.markinghelper.model.CsvReport;
 import com.rigiresearch.markinghelper.model.Submission;
+import com.rigiresearch.markinghelper.ui.MainWindow;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +148,7 @@ public class Application implements Runnable {
     @Override
     public void run() {
         validateArguments();
-        Iterable<Submission> submissions = new FileSubmissionProvider(
+        List<Submission> submissions = new FileSubmissionProvider(
             new File(this.directory),
             this.exclusionRegexp,
             new File(this.namingScript)
@@ -159,11 +160,10 @@ public class Application implements Runnable {
                 .collect(Collectors.toList())
         );
         try {
+            marker.mark();
             if (this.ui) {
-                // new MarkingWindow(marker);
-                System.out.println("Openning UI for semi-automatic grading");
+                new MainWindow(marker).configure();
             } else {
-                marker.mark();
                 System.out.println(new CsvReport(submissions).report());
             }
         } catch (Exception e) {

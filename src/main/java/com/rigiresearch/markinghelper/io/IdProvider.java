@@ -64,6 +64,7 @@ public final class IdProvider {
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             final ByteArrayOutputStream errOutput = new ByteArrayOutputStream();
             final int exitCode = new ProcessExecutor()
+                .environment(System.getenv())
                 .directory(this.script.getParentFile())
                 .command("sh", this.script.getName(), directory.getAbsolutePath())
                 .timeout(60, TimeUnit.SECONDS)

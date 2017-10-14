@@ -21,6 +21,7 @@
  */
 package com.rigiresearch.markinghelper.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -50,11 +51,22 @@ public final class CsvReport {
         StringBuilder builder = new StringBuilder();
         builder.append("StudentId,Marks,Feedback\n");
         submissions.forEach(submission -> {
+            double marks = 0d;
+            String feedback = new String();
+            final AtomicInteger i = new AtomicInteger(1);
+            for (Result result : submission.results()) {
+                marks += result.marks();
+                feedback += String.format(
+                    "PART %d: %s\n",
+                    i.getAndIncrement(),
+                    result.feedback()
+                );
+            }
             builder.append(this.escape(submission.studentId()));
             builder.append(",");
-            builder.append(submission.result().marks());
+            builder.append(marks);
             builder.append(",");
-            builder.append(this.escape(submission.result().feedback()));
+            builder.append(this.escape(feedback));
             builder.append("\n");
         });
         return builder.toString();

@@ -10,10 +10,8 @@ compilation="$(gcc "$SOURCE_FILE" -o "$DIRECTORY"/"$base".out)"
 output="$("$DIRECTORY"/"$base".out)"
 
 echo "50.0"
-echo "'------------------------------"
-echo "PART 2"
-echo "Feedback: Everything is fine!"
-echo "Program's output:"
+echo $SOURCE_FILE
+echo "everything is fine!"
 echo $output
 # >&2 echo "example error message"
 # exit 1

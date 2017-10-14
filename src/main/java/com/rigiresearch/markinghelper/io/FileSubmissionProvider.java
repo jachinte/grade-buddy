@@ -23,6 +23,7 @@ package com.rigiresearch.markinghelper.io;
 
 import com.rigiresearch.markinghelper.model.Submission;
 import java.io.File;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
@@ -60,7 +61,7 @@ public final class FileSubmissionProvider {
      * Lists the submission directories as {@link Submission} instances.
      * @return an iterable of submissions.
      */
-    public Iterable<Submission> submissions() {
+    public List<Submission> submissions() {
         return Stream.of(this.directories())
             .map(directory -> {
                 final Submission submission = new Submission(directory);

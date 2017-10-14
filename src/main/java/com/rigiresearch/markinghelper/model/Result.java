@@ -21,8 +21,10 @@
  */
 package com.rigiresearch.markinghelper.model;
 
+import java.io.File;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
@@ -40,13 +42,27 @@ import lombok.experimental.Accessors;
 public final class Result {
 
     /**
+     * The file marked.
+     * If it is a directory, it is assumed to be the submission.
+     */
+    private final File markedFile;
+
+    /**
      * The assigned marks.
      */
-    private final double marks;
+    @Setter
+    private double marks;
 
     /**
      * Comments explaining the assigned marks.
      */
-    private final String feedback;
+    @Setter
+    private String feedback;
+
+    /**
+     * The program's output.
+     */
+    @Setter
+    private String output;
 
 }

@@ -22,6 +22,8 @@
 package com.rigiresearch.markinghelper.model;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -38,7 +40,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @Getter
 @RequiredArgsConstructor
-@ToString(of = {"studentId", "result"})
+@ToString(of = {"studentId", "results"})
 public final class Submission {
 
     /**
@@ -50,12 +52,12 @@ public final class Submission {
      * The student identifier.
      */
     @Setter
-    private String studentId;
+    private String studentId = new String();
 
     /**
-     * The marking result.
+     * The marking results.
      */
     @Setter
-    private Result result;
+    private List<Result> results = new ArrayList<>();
 
 }

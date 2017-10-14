@@ -25,6 +25,7 @@ import com.rigiresearch.markinghelper.model.Result;
 import com.rigiresearch.markinghelper.model.Submission;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -50,7 +51,7 @@ public final class AutomatedMarking {
     /**
      * The collection of submissions.
      */
-    private final Iterable<Submission> submissions;
+    private final List<Submission> submissions;
 
     /**
      * The shell scripts (one per assignment part) to run over the submissions.
@@ -62,26 +63,24 @@ public final class AutomatedMarking {
      */
     public void mark() throws Exception {
         for (Submission submission : this.submissions) {
-            submission.result(this.markingResult(submission.directory()));
+            submission.results(this.markingResults(submission.directory()));
         }
     }
 
     /**
      * Runs the assignment shell scripts on the specified submission and return
-     * the sum of the corresponding marks.
+     * the corresponding marking results.
      * @param submission The submission to mark
-     * @return The marking result
-     * @throws Exception If something bad happens when running the script
+     * @return The marking results
+     * @throws Exception If something bad happens when running the scripts
      */
-    public Result markingResult(final File submission) throws Exception {
-        double marks = 0d;
-        String feedback = new String();
+    public List<Result> markingResults(final File submission)
+        throws Exception {
+        List<Result> results = new ArrayList<>();
         for (File script : this.scripts) {
-            final Result r = this.markingResult(submission, script);
-            marks += r.marks();
-            feedback += String.format("%s\n", r.feedback());
+            results.add(this.markingResult(submission, script));
         }
-        return new Result(marks, feedback);
+        return results;
     }
 
     /**
@@ -94,70 +93,87 @@ public final class AutomatedMarking {
      */
     public Result markingResult(final File submission, final File script)
         throws Exception {
+        File file = new File("");
         double marks = 0d;
         String feedback = "";
+        String output = "";
         try {
-            final ByteArrayOutputStream output = new ByteArrayOutputStream();
-            final ByteArrayOutputStream errOutput = new ByteArrayOutputStream();
+            final ByteArrayOutputStream stdOutput = new ByteArrayOutputStream();
+            final ByteArrayOutputStream stdErr = new ByteArrayOutputStream();
             final int exitCode = new ProcessExecutor()
+                .environment(System.getenv())
                 .directory(script.getParentFile())
                 .command("sh", script.getName(), submission.getAbsolutePath())
                 .timeout(60, TimeUnit.SECONDS)
-                .redirectOutput(output)
-                .redirectError(errOutput)
+                .redirectOutput(stdOutput)
+                .redirectError(stdErr)
                 .readOutput(true)
                 .execute()
                 .getExitValue();
             final Result r = this.handleOutput(
                 exitCode,
-                output.toString(),
-                errOutput.toString()
+                stdOutput.toString(),
+                stdErr.toString()
             );
+            file = r.markedFile();
             marks = r.marks();
             feedback = r.feedback();
+            output = r.output();
         } catch (TimeoutException e) {
             feedback = "Timeout while trying to mark the submission";
         }
-        return new Result(marks, feedback);
+        return new Result(file, marks, feedback, output);
     }
 
     /**
      * Determines the marks and feedback from the script's output.
      * @param exitCode The exit code returned by the marking script
-     * @param output The output text from the marking script execution
-     * @param errOutput The error text from the marking script execution
+     * @param stdOutput The output text from the marking script execution
+     * @param stdErr The error text from the marking script execution
      * @return The marking result
      * @throws Exception If something went wrong while executing the script
      */
-    private Result handleOutput(final int exitCode, final String output,
-        final String errOutput) throws Exception {
+    private Result handleOutput(final int exitCode, final String stdOutput,
+        final String stdErr) throws Exception {
+        File file = new File("");
         double marks = 0d;
         String feedback = "";
+        String output = "";
         if (exitCode != 0) {
             feedback = String.format(
                 "The marking script returned a non-zero code (%d)."
                 + "\nOutput stream: %s\nError stream: %s",
                 exitCode,
-                output,
-                errOutput
+                stdOutput,
+                stdErr
             );
         } else {
-            final Pattern pattern = Pattern.compile("^(\\d*\\.\\d+|\\d+\\.\\d*)([.\\s\\S]*)$");
-            final Matcher matcher = pattern.matcher(output.toString());
+            final Pattern pattern = Pattern.compile(
+                String.format(
+                    "%s%s%s%s",
+                    "^(\\d*\\.\\d+|\\d+\\.\\d*)[\\s\\S]", // the marks
+                    "(.*)[\\s\\S]", // the marked file
+                    "(.*)[\\s\\S]", // the feedback
+                    "([.\\s\\S]*)$" // the program's output
+                )
+            );
+            final Matcher matcher = pattern.matcher(stdOutput.toString());
             if (matcher.find()) {
                 marks = Double.parseDouble(matcher.group(1));
-                feedback = matcher.group(2).trim();
+                file = new File(matcher.group(2));
+                feedback = matcher.group(3);
+                output = matcher.group(4);
             } else {
                 throw new Exception(
                     String.format(
                         "Output from marking script does not follow "
                         + "expected output.\nActual output: %s",
-                        output.toString()
+                        stdOutput.toString()
                     )
                 );
             }
         }
-        return new Result(marks, feedback);
+        return new Result(file, marks, feedback, output);
     }
 
 }
