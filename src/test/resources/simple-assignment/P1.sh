@@ -7,7 +7,7 @@ SOURCE_FILE="$(find "$DIRECTORY" -name '*P1.c' | head -n 1)"
 name=${SOURCE_FILE##*/}
 base=${name%.c}
 compilation="$(gcc "$SOURCE_FILE" -o "$DIRECTORY"/"$base".out)"
-output="$(./"$DIRECTORY"/"$base".out)"
+output="$("$DIRECTORY"/"$base".out)"
 
 echo "50.0"
 echo "------------------------------"
