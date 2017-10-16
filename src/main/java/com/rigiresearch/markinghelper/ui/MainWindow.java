@@ -117,7 +117,6 @@ public final class MainWindow extends JFrame {
         this.setExtendedState(MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.initialise();
-        this.displayData(this.marking.submissions().iterator().next());
         this.setVisible(true);
     }
 
