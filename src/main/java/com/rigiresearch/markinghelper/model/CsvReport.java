@@ -49,7 +49,7 @@ public final class CsvReport {
      */
     public String report() {
         StringBuilder builder = new StringBuilder();
-        builder.append("StudentId,Marks,Feedback\n");
+        builder.append("StudentId,Marks,Feedback,Directory\n");
         submissions.forEach(submission -> {
             double marks = 0d;
             String feedback = new String();
@@ -57,8 +57,9 @@ public final class CsvReport {
             for (Result result : submission.results()) {
                 marks += result.marks();
                 feedback += String.format(
-                    "PART %d: %s\n",
+                    "PART %d (%s): %s\n",
                     i.getAndIncrement(),
+                    result.markedFile().getName(),
                     result.feedback().isEmpty() ?
                         "No feedback provided" : result.feedback()
                 );
@@ -68,6 +69,8 @@ public final class CsvReport {
             builder.append(marks);
             builder.append(",");
             builder.append(this.escape(feedback));
+            builder.append(",");
+            builder.append(submission.directory().getAbsolutePath());
             builder.append("\n");
         });
         return builder.toString();
@@ -83,7 +86,7 @@ public final class CsvReport {
             "\"%s\"",
             text.replace(
                 "\"",
-                "\\\""
+                "'"
             )
         );
     }
