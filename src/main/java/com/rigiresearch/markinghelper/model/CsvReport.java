@@ -59,7 +59,8 @@ public final class CsvReport {
                 feedback += String.format(
                     "PART %d: %s\n",
                     i.getAndIncrement(),
-                    result.feedback()
+                    result.feedback().isEmpty() ?
+                        "No feedback provided" : result.feedback()
                 );
             }
             builder.append(this.escape(submission.studentId()));
