@@ -67,7 +67,7 @@ public final class FileSubmissionProvider {
                 final Submission submission = new Submission(directory);
                 try {
                     submission.studentId(
-                        new IdProvider(
+                        new FileIdProvider(
                             directory,
                             this.namingScript
                         ).studentId()

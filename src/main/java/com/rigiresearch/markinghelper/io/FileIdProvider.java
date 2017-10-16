@@ -26,8 +26,8 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.zeroturnaround.exec.ProcessExecutor;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -38,9 +38,9 @@ import lombok.experimental.Accessors;
  * @since 0.0.1
  */
 @Accessors(fluent = true)
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-public final class IdProvider {
+public final class FileIdProvider {
 
     /**
      * The submission directory.
@@ -51,6 +51,11 @@ public final class IdProvider {
      * The shell script to extract the student identifier.
      */
     private final File script;
+
+    /**
+     * Default value for empty identifier.
+     */
+    private static final String DEFAULT_ID = "UNKNOWN";
 
     /**
      * Runs the shell script to extract the student identifier from the
@@ -111,7 +116,8 @@ public final class IdProvider {
                 )
             );
         }
-        return output.toString().trim();
+        return output.toString().trim().isEmpty() ?
+                FileIdProvider.DEFAULT_ID : output.toString().trim();
     }
 
 }
