@@ -186,7 +186,7 @@ public final class MainWindow extends JFrame {
                         "%s%s// PART %d\n%s",
                         this.sourceTextArea.getText(),
                         this.sourceTextArea.getText().isEmpty()? "" : "\n\n",
-                        i++,
+                        i,
                         contents
                     )
                 );
