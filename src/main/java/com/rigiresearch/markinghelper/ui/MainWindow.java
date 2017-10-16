@@ -170,7 +170,6 @@ public final class MainWindow extends JFrame {
      */
     private void displayData(final Submission submission)
         throws IOException {
-        int i = 1;
         this.sourceTextArea.setText(new String());
         this.outputTextArea.setText(new String());
         for (Result r : submission.results()) {
@@ -182,19 +181,19 @@ public final class MainWindow extends JFrame {
                 );
                 this.sourceTextArea.setText(
                     String.format(
-                        "%s%s// PART %d\n%s",
+                        "%s%s// %s\n%s",
                         this.sourceTextArea.getText(),
                         this.sourceTextArea.getText().isEmpty()? "" : "\n\n",
-                        i,
+                        r.markedFile().getName(),
                         contents
                     )
                 );
                 this.outputTextArea.setText(
                     String.format(
-                        "%s%s// PART %d\n%s",
+                        "%s%s// %s\n%s",
                         this.outputTextArea.getText(),
                         this.outputTextArea.getText().isEmpty()? "" : "\n\n",
-                        i++,
+                        r.markedFile().getName(),
                         r.output()
                     )
                 );
