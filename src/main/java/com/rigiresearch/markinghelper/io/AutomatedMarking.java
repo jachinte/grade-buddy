@@ -167,8 +167,9 @@ public final class AutomatedMarking {
                 throw new Exception(
                     String.format(
                         "Output from marking script does not follow "
-                        + "expected output.\nActual output: %s",
-                        stdOutput.toString()
+                        + "expected output.\nActual output: %s\nError output: %s",
+                        stdOutput.toString(),
+                        stdErr.toString()
                     )
                 );
             }
