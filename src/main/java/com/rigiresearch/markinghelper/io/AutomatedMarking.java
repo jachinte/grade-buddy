@@ -151,16 +151,16 @@ public final class AutomatedMarking {
             final Pattern pattern = Pattern.compile(
                 String.format(
                     "%s%s%s%s",
-                    "^(\\d*\\.\\d+|\\d+\\.\\d*)[\\s\\S]", // the marks
-                    "(.*)[\\s\\S]", // the marked file
+                    "^(.*)[\\s\\S]", // the marked file
+                    "(\\d*\\.\\d+|\\d+\\.\\d*)[\\s\\S]", // the marks
                     "(.*)[\\s\\S]", // the feedback
                     "([.\\s\\S]*)$" // the program's output
                 )
             );
             final Matcher matcher = pattern.matcher(stdOutput.toString());
             if (matcher.find()) {
-                marks = Double.parseDouble(matcher.group(1));
-                file = new File(matcher.group(2));
+                file = new File(matcher.group(1));
+                marks = Double.parseDouble(matcher.group(2));
                 feedback = matcher.group(3);
                 output = matcher.group(4);
             } else {

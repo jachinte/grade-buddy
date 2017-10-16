@@ -9,8 +9,8 @@ base=${name%.c}
 compilation="$(gcc "$SOURCE_FILE" -o "$DIRECTORY"/"$base".out)"
 output="$("$DIRECTORY"/"$base".out)"
 
-echo "50.0"
 echo $SOURCE_FILE
+echo "50.0"
 echo "everything is fine!"
 echo $output
 # >&2 echo "example error message"
