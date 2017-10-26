@@ -2,7 +2,7 @@
 
 This project assists teaching assistants and professors in automating the marking of programming assignments. It runs custom marking scripts and allows to navigate through the submission files using a graphical user interface.
 
-![Screenshot](https://s1.postimg.org/145oc9xbin/marking-helper.png)
+![Screenshot](https://s1.postimg.org/5fz9r0yttr/marking-helper.png)
 
 ### Build the application from the sources
 
