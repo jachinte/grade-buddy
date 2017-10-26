@@ -22,6 +22,7 @@
 package com.rigiresearch.gradebuddy.model;
 
 import java.io.File;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,12 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Getter
 @ToString(of = {"marks"})
-public final class Result {
+public final class Result implements Serializable {
+
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 5528592613429767612L;
 
     /**
      * The file marked.

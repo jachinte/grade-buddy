@@ -30,6 +30,9 @@ import com.rigiresearch.gradebuddy.model.CsvReport;
 import com.rigiresearch.gradebuddy.model.Submission;
 import com.rigiresearch.gradebuddy.ui.MainWindow;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,10 +58,17 @@ public class Application implements Runnable {
     private List<String> parameters = new ArrayList<>();
 
     @Parameter(
+        names = {"--backup", "-b"},
+        description = "A backup file containing a previous configuration",
+        order = 1
+    )
+    private String backup;
+
+    @Parameter(
         names = {"--directory", "-d"},
         description = "The directory containing the assignment submissions",
         required = true,
-        order = 1
+        order = 2
     )
     private String directory;
 
@@ -66,7 +76,7 @@ public class Application implements Runnable {
         names = {"--marking-script", "-m"},
         description = "A shell script to run over each submission",
         required = true,
-        order = 2
+        order = 3
     )
     private List<String> markingScripts = new ArrayList<>();
 
@@ -74,28 +84,28 @@ public class Application implements Runnable {
         names = {"--naming-script", "-n"},
         description = "A shell script to extract the submission's id",
         required = true,
-        order = 3
+        order = 4
     )
     private String namingScript;
 
     @Parameter(
         names = {"--exclude", "-e"},
         description = "Regular expression to exclude directories",
-        order = 4
+        order = 5
     )
     private String exclusionRegexp = "";
 
     @Parameter(
         names = {"--ui", "-u"},
         description = "Open the graphical user interface",
-        order = 5
+        order = 6
     )
     private boolean ui = false;
 
     @Parameter(
         names = {"--help", "-h"},
         description = "Shows this message",
-        order = 6
+        order = 7
     )
     private boolean help = false;
 
@@ -131,6 +141,8 @@ public class Application implements Runnable {
      */
     public void validateArguments() {
         final List<String> paths = new ArrayList<>();
+        if (this.backup != null)
+            paths.add(this.backup);
         paths.add(this.directory);
         paths.add(this.namingScript);
         paths.addAll(this.markingScripts);
@@ -148,28 +160,54 @@ public class Application implements Runnable {
     @Override
     public void run() {
         validateArguments();
-        List<Submission> submissions = new FileSubmissionProvider(
-            new File(this.directory),
-            this.exclusionRegexp,
-            new File(this.namingScript)
-        ).submissions();
-        final AutomatedMarking marker = new AutomatedMarking(
-            submissions,
-            this.markingScripts.stream()
-                .map(script -> new File(script))
-                .collect(Collectors.toList())
-        );
+        AutomatedMarking marker;
         try {
-            marker.mark();
+            if (this.backup != null) {
+                marker = this.loadBackup();
+            } else {
+                List<Submission> submissions = new FileSubmissionProvider(
+                    new File(this.directory),
+                    this.exclusionRegexp,
+                    new File(this.namingScript)
+                ).submissions();
+                marker = new AutomatedMarking(
+                    submissions,
+                    this.markingScripts.stream()
+                        .map(script -> new File(script))
+                        .collect(Collectors.toList())
+                );
+                marker.mark();
+            }
             if (this.ui) {
                 new MainWindow(marker).configure();
             } else {
-                System.out.println(new CsvReport(submissions).report());
+                System.out.println(
+                    new CsvReport(marker.submissions()).report()
+                );
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(5);
         }
+    }
+
+    /**
+     * Loads a backup file.
+     * @return a marking object.
+     * @throws IOException If there is an I/O error
+     * @throws ClassNotFoundException If the saved class is not found
+     */
+    private AutomatedMarking loadBackup()
+        throws IOException, ClassNotFoundException {
+        ObjectInputStream stream = new ObjectInputStream(
+            new FileInputStream(
+                new File(this.backup)
+            )
+        );
+        final AutomatedMarking marking =
+            (AutomatedMarking) stream.readObject();
+        stream.close();
+        return marking;
     }
 
 }

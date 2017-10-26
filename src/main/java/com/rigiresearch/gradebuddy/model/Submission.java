@@ -22,6 +22,7 @@
 package com.rigiresearch.gradebuddy.model;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -41,7 +42,12 @@ import lombok.experimental.Accessors;
 @Getter
 @RequiredArgsConstructor
 @ToString(of = {"studentId", "results"})
-public final class Submission {
+public final class Submission implements Serializable {
+
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 4189091518228075008L;
 
     /**
      * The submission physical directory.

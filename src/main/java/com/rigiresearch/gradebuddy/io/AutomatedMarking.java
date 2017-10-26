@@ -25,6 +25,7 @@ import com.rigiresearch.gradebuddy.model.Result;
 import com.rigiresearch.gradebuddy.model.Submission;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +47,12 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @AllArgsConstructor
 @Getter
-public final class AutomatedMarking {
+public final class AutomatedMarking implements Serializable {
+
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 2673931393804564234L;
 
     /**
      * The collection of submissions.

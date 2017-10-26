@@ -27,6 +27,8 @@ The previous command shows the application menu:
 The following options are required: [--marking-script | -m], [--directory | -d], [--naming-script | -n]
 Usage: <main class> [options]
   Options:
+    --backup, -b
+      A backup file containing a previous configuration
   * --directory, -d
       The directory containing the assignment submissions
   * --marking-script, -m
@@ -167,3 +169,7 @@ java -jar <path-to-target>/grade-buddy.jar \
     -n ./submissions/naming.sh \
     -u
 ```
+
+#### Running the Grade Buddy from a backup
+
+You only need to mark the submissions once if you export a backup file. Next time you want to navigate through the submissions, or correct them, you only have to specify the backup file using the `--backup` (or `-b`) switch. Notice that using this option causes that the rest of the arguments are ignored, except for the `--ui` option. If you have changed any of the paths (e.g., script paths), you cannot use a previous backup file. 

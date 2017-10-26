@@ -28,7 +28,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.function.Function;
@@ -105,13 +107,17 @@ public final class Toolbar extends JPanel implements ActionListener {
      * Initialize graphical components.
      */
     private void initialize() {
+        JButton backup = new JButton("Save backup");
+        backup.setActionCommand("save");
+        backup.addActionListener(this);
         JButton export = new JButton("Export Report");
         export.setActionCommand("export");
         export.addActionListener(this);
-        JButton mark = new JButton("Mark Submission");
+        JButton mark = new JButton("Re-Mark Submission");
         mark.setActionCommand("mark");
         mark.addActionListener(this);
         this.toolBar = new JToolBar("Tools");
+        this.toolBar.add(backup);
         this.toolBar.add(export);
         this.toolBar.add(mark);
         this.add(toolBar, BorderLayout.PAGE_START);
@@ -138,10 +144,51 @@ public final class Toolbar extends JPanel implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand() == "export") {
+        if (e.getActionCommand() == "save") {
+            this.saveBackup();
+        } else if (e.getActionCommand() == "export") {
             this.export();
         } else if (e.getActionCommand() == "mark") {
             this.markSubmission();
+        }
+    }
+
+    /**
+     * Saves a backup file.
+     */
+    private void saveBackup() {
+        boolean error = false;
+        final JFileChooser fc = new JFileChooser();
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (JFileChooser.APPROVE_OPTION == fc.showOpenDialog(this)) {
+            final File file = new File(fc.getSelectedFile(), "marking.backup");
+            ObjectOutputStream stream = null;
+            try {
+                stream = new ObjectOutputStream(
+                    new FileOutputStream(file)
+                );
+                stream.writeObject(this.marking);
+            } catch (Exception e) {
+                error = true;
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (stream != null) {
+                        stream.flush();
+                        stream.close();
+                    }
+                } catch (IOException e) {
+                    // Do nothing
+                }
+            }
+        }
+        if (error) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Error writing backup file. Please read the error output.",
+                "Backup error",
+                JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
@@ -152,7 +199,7 @@ public final class Toolbar extends JPanel implements ActionListener {
         final JFileChooser fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (JFileChooser.APPROVE_OPTION == fc.showOpenDialog(this)) {
-            File file = new File(fc.getSelectedFile(), "report.csv");
+            final File file = new File(fc.getSelectedFile(), "report.csv");
             try {
                 Files.write(
                     Paths.get(file.getAbsolutePath()),
