@@ -4,6 +4,11 @@ This project assists teaching assistants and professors in automating the markin
 
 ![Screenshot](https://s1.postimg.org/5fz9r0yttr/marking-helper.png)
 
+### Benefits
+
+- Don't re-invent the wheel. Teaching assistants often develop their own scripts over and over, year after year, to perform the same basic tasks. Instead, use this utility to automate the common operations and focus on what's relevant: the marking code.
+- This utility is very simple. You provide a shell script to mark your code, Grade Buddy runs it on each submission and lets you navigate over the results (and some other things too). If you're looking for a management system for your course, Grade Buddy isn't for you.
+
 ### Build the application from the sources
 
 First, clone or download this repository and then package the application artefacts using [Maven](https://maven.apache.org/):
