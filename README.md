@@ -60,15 +60,16 @@ java -jar target/grade-buddy.jar \
 
 ### Create your own marking project
 
-First of all, organize the submissions directory into one single directory, let's say `submissions`. Then, you need to create an ID provider and at least one marking script. The following subsections contain code examples to help you develop your own marking project. All of the examples rely on the following directory structure (extracted from [here](src/test/resources/simple-assignment)):
+First of all, organize the submissions directory into one single directory, let's say `submissions`. Then, you need to create an ID provider and at least one marking script. The following subsections contain code examples to help you develop your own marking project. These examples rely on the following directory structure:
 
 ```
 .
 └── submissions
     ├── P1.sh
-    ├── P1.java
     ├── P2.sh
-    ├── P2.java
+    ├── src
+    │   ├── P1.java
+    │   ├── P2.java
     ├── jane-doe
     │   ├── V00812345P1.c
     │   ├── V00812345P2.c
@@ -140,8 +141,8 @@ output="$("$DIRECTORY"/"$base".out)"
 echo $SOURCE_FILE
 
 # Run the evaluator
-javac $BASEDIR/../src/P1.java
-java -cp $BASEDIR/../src P1 "$output"
+javac $BASEDIR/src/P1.java
+java -cp $BASEDIR/src P1 "$output"
 EXIT_CODE=$?
 
 # Print out the program's output and exit
