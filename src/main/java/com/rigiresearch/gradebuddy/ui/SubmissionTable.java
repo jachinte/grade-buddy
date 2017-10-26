@@ -52,11 +52,17 @@ public final class SubmissionTable extends JTable {
     private final List<Submission> submissions;
 
     /**
+     * The table model.
+     */
+    private final SubmissionTableModel model;
+
+    /**
      * Default constructor.
      */
     public SubmissionTable(final List<Submission> submissions) {
         this.submissions = submissions;
-        this.setModel(new SubmissionTableModel(this.submissions));
+        this.model = new SubmissionTableModel(this.submissions);
+        this.setModel(model);
         for (int i = 0; i < this.getColumnModel().getColumnCount(); i++) {
             final TableColumn column = getColumnModel().getColumn(i);
             if (i % 2 == 0) {
@@ -109,5 +115,13 @@ public final class SubmissionTable extends JTable {
                 .setPreferredWidth(c.getPreferredSize().width);
         }
         this.setRowHeight(row, rowHeight);
+    }
+
+    /**
+     * Updates the submission data on the table.
+     * @param submission The submission
+     */
+    public void triggerRowUpdate(final Submission submission) {
+        this.model.triggerRowUpdate(submission);
     }
 }

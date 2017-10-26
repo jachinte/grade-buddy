@@ -125,4 +125,15 @@ public final class SubmissionTableModel extends AbstractTableModel {
         this.fireTableCellUpdated(rowIndex, columnIndex);
     }
 
+    /**
+     * Updates the submission data on the table.
+     * @param submission The submission
+     */
+    public void triggerRowUpdate(final Submission submission) {
+        int r = this.submissions.indexOf(submission);
+        for (int c = 0; c < this.getColumnCount(); c++) {
+            this.fireTableCellUpdated(r, c);
+        }
+    }
+
 }

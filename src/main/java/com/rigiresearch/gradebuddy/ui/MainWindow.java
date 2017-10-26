@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.function.Function;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -55,28 +56,6 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 public final class MainWindow extends JFrame {
-
-    class SelectionListener implements ListSelectionListener {
-
-        /* (non-Javadoc)
-         * @see javax.swing.event.ListSelectionListener
-         *  #valueChanged(javax.swing.event.ListSelectionEvent)
-         */
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-            ListSelectionModel selectionModel =
-                (ListSelectionModel) e.getSource();
-            try {
-                MainWindow.this.displayData(
-                    MainWindow.this.marking.submissions()
-                        .get(selectionModel.getMinSelectionIndex())
-                );
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-        
-    }
 
     /**
      * Serial version UID.
@@ -133,7 +112,22 @@ public final class MainWindow extends JFrame {
         JScrollPane tablePanel = new JScrollPane(this.table);
         this.table.setFillsViewportHeight(true);
         this.table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.table.getSelectionModel().addListSelectionListener(new SelectionListener());
+        this.table.getSelectionModel()
+            .addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    final ListSelectionModel model =
+                        (ListSelectionModel) e.getSource();
+                    try {
+                        MainWindow.this.displayData(
+                            MainWindow.this.marking.submissions()
+                                .get(model.getMinSelectionIndex())
+                        );
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            });
 
         // Syntax highlighting panel
         this.sourceTextArea = new RSyntaxTextArea();
@@ -147,7 +141,21 @@ public final class MainWindow extends JFrame {
         JScrollPane outputPanel = new JScrollPane(this.outputTextArea);
 
         // Tool bar
-        Toolbar toolBar = new Toolbar(this.marking.submissions());
+        Toolbar toolBar = new Toolbar(
+            this.table,
+            this.marking,
+            new Function<Submission, Object>() {
+                @Override
+                public Object apply(Submission submission) {
+                    try {
+                        MainWindow.this.displayData(submission);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return new Object();
+                }
+            }
+        );
 
         // Docking UI
         DockController controller = new DockController();
