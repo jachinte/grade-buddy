@@ -112,7 +112,7 @@ public final class MainWindow extends JFrame {
      */
     public void configure() throws IOException {
         this.setLayout(new BorderLayout());
-        this.setTitle("Marking Helper - A utility by Miguel Jimenez");
+        this.setTitle("Grade Buddy - github.com/jachinte/grade-buddy");
         this.setBounds(20, 20, 800, 640);
         this.setExtendedState(MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
