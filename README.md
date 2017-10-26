@@ -4,9 +4,7 @@ This project assists teaching assistants and professors in automating the markin
 
 ![Screenshot](https://s1.postimg.org/145oc9xbin/marking-helper.png)
 
-## Instructions
-
-#### Build the application from the sources
+### Build the application from the sources
 
 First, clone or download this repository and then package the application artefacts using [Maven](https://maven.apache.org/):
 
@@ -15,7 +13,7 @@ git clone https://github.com/jachinte/marking-helper ; cd marking-helper
 mvn package
 ```
 
-#### Run the application
+### Run the application
 
 The marking helper is provided as a command-line application. Run it using the following command:
 
@@ -47,7 +45,7 @@ Usage: <main class> [options]
       Default: false
 ```
 
-#### Demo
+### Demo
 
 Run the following command to see the marking helper in action:
 
@@ -60,7 +58,7 @@ java -jar target/marking-helper.jar \
     -u
 ```
 
-#### Create your own marking project
+### Create your own marking project
 
 First of all, organize the submissions directory into one single directory, let's say `submissions`. Then, you need to create an ID provider and at least one marking script. The following subsections contain code examples to help you develop your own marking project. All of the examples rely on the following directory structure (extracted from [here](src/test/resources/simple-assignment)):
 
@@ -82,7 +80,7 @@ First of all, organize the submissions directory into one single directory, let'
 
 Where `P1.sh` and `P2.sh` are marking scripts (part 1 and part 2), and `naming.sh` is an ID provider. `jane-doe` and `john-doe` are student submissions.
 
-##### ID provider
+#### ID provider
 
 An ID provider is a script that returns a unique identifier given a submission directory. The ID may represent the student's ID.
 
@@ -105,14 +103,14 @@ echo $ID | awk '{print toupper($0)}'
 
 The previous code takes any C file from the submission directory and extracts the student ID.
 
-##### Marking files
+#### Marking files
 
 An assignment may be composed of several parts. You need to specify each part separate in the form of a shell script. When executing a marking script, the marking helper will pass the submission directory as argument. The helper expects the following information from the standard output (in the same order, each on a new line):
 
-- A path to the source file being marked
-- A number representing the corresponding marks
-- A single line providing feedback to the student
-- The student program's output (may contain several lines)
+1. A path to the source file being marked
+2. A number representing the corresponding marks
+3. A single line providing feedback to the student
+4. The student program's output (may contain several lines)
 
 The following represents an example marking script:
 
@@ -155,12 +153,12 @@ Notice that the script above delegates the marking (grade and feedback determina
 
 The `EXIT_CODE` variable is used to detect any erroneous execution of the student's program. If the exit code is different than 0, the marking helper will report this as part of the feedback.
 
-##### Running the marking helper
+#### Running the marking helper
 
 According to the project structure presented above, the command to run the marking helper is:
 
 ```bash
-java -jar <path-top-target>/marking-helper.jar \
+java -jar <path-to-target>/marking-helper.jar \
     -d ./submissions \
     -m ./submissions/P1.sh \
     -m ./submissions/P2.sh \
