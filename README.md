@@ -106,7 +106,7 @@ The previous code takes any C file from the submission directory and extracts th
 
 #### Marking files
 
-An assignment may be composed of several parts. You need to specify each part separate in the form of a shell script. When executing a marking script, the Grade Buddy will pass the submission directory as argument. The Grade Buddy expects the following information from the standard output (in the same order, each on a new line):
+An assignment may be composed of several parts. You need to create a shell script for each part. When executing a marking script, the Grade Buddy will pass the submission directory as argument. The following elements are expected as output from a marking script (in the same order, each on a new line):
 
 1. A path to the source file being marked
 2. A number representing the corresponding marks
@@ -141,6 +141,7 @@ output="$("$DIRECTORY"/"$base".out)"
 echo $SOURCE_FILE
 
 # Run the evaluator
+# It is expected to print the corresponding grade and feedback
 javac $BASEDIR/src/P1.java
 java -cp $BASEDIR/src P1 "$output"
 EXIT_CODE=$?
@@ -159,7 +160,7 @@ The `EXIT_CODE` variable is used to detect any erroneous execution of the studen
 According to the project structure presented above, the command to run the Grade Buddy is:
 
 ```bash
-java -jar <path-to-target>/marking-helper.jar \
+java -jar <path-to-target>/grade-buddy.jar \
     -d ./submissions \
     -m ./submissions/P1.sh \
     -m ./submissions/P2.sh \
