@@ -2,7 +2,7 @@
 
 This project assists teaching assistants and professors in automating the marking of programming assignments. Don't re-invent the wheel! Teaching assistants often develop their own scripts over and over, year after year, to perform the same basic tasks. Instead, use this utility to automate the common operations and focus on what's relevant: the marking code.
 
-![Screenshot](https://postimg.org/image/88i5nnto7v/)
+![Screenshot](https://s1.postimg.org/5h93fl7k67/grade-buddy.png)
 
 ### Build the application from the sources
 
