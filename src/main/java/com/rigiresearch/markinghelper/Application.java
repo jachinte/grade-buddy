@@ -108,8 +108,8 @@ public class Application implements Runnable {
         try {
             JCommander jc = JCommander.newBuilder()
                 .addObject(app)
+                .programName("<program>")
                 .build();
-            jc.setProgramName("<program>");
             jc.parse(args);
             if (app.help) {
                 jc.usage();
