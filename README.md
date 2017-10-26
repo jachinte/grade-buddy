@@ -1,6 +1,6 @@
 # Marking Helper
 
-This project helps teaching assistants and professors in automating the marking of programming assignments. It runs custom marking scripts and allows to navigate through the submission files using a graphical user interface.
+This project assists teaching assistants and professors in automating the marking of programming assignments. It runs custom marking scripts and allows to navigate through the submission files using a graphical user interface.
 
 ![Screenshot](https://s1.postimg.org/145oc9xbin/marking-helper.png)
 
@@ -17,7 +17,7 @@ mvn package
 
 #### Run the application
 
-The marking helper is provided as a command-line application, run it using the following command:
+The marking helper is provided as a command-line application. Run it using the following command:
 
 ```bash
 java -jar target/marking-helper.jar --help
@@ -25,7 +25,7 @@ java -jar target/marking-helper.jar --help
 
 The previous command shows the application menu:
 
-```
+```bash
 The following options are required: [--marking-script | -m], [--directory | -d], [--naming-script | -n]
 Usage: <main class> [options]
   Options:
@@ -51,7 +51,7 @@ Usage: <main class> [options]
 
 Run the following command to see the marking helper in action:
 
-```
+```bash
 java -jar target/marking-helper.jar \
     -d src/test/resources/simple-assignment \
     -m src/test/resources/simple-assignment/P1.sh \
@@ -62,6 +62,108 @@ java -jar target/marking-helper.jar \
 
 #### Create your own marking project
 
-##### Marking files
+First of all, organize the submissions directory into one single directory, let's say `submissions`. Then, you need to create an ID provider and at least one marking script. The following subsections contain code examples to help you develop your own marking project. All of the examples rely on the following directory structure (extracted from [here](src/test/resources/simple-assignment)):
+
+```
+.
+└── submissions
+    ├── P1.sh
+    ├── P1.java
+    ├── P2.sh
+    ├── P2.java
+    ├── jane-doe
+    │   ├── V00812345P1.c
+    │   ├── V00812345P2.c
+    ├── john-doe
+    │   ├── V00898765P1.c
+    │   ├── V00898765P2.c
+    └── naming.sh
+```
+
+Where `P1.sh` and `P2.sh` are marking scripts (part 1 and part 2), and `naming.sh` is an ID provider. `jane-doe` and `john-doe` are student submissions.
+
 ##### ID provider
 
+An ID provider is a script that returns a unique identifier given a submission directory. The ID may represent the student's ID.
+
+Before marking the files in a submission, the marking helper will run this script, passing the submission directory as argument. The following represents an example script:
+
+```bash
+#!/bin/bash
+DIRECTORY=$1
+REGEX="V[0-9]+"
+
+ANY_FILE="$(find "$DIRECTORY" -name "*.c" | head -n 1)"
+name=${ANY_FILE##*/}
+base=${name%.c}
+
+ID="$(echo "$base" | grep -oEi "$REGEX")"
+
+# Print the upper-case version of the student ID
+echo $ID | awk '{print toupper($0)}'
+```
+
+The previous code takes any C file from the submission directory and extracts the student ID.
+
+##### Marking files
+
+An assignment may be composed of several parts. You need to specify each part separate in the form of a shell script. When executing a marking script, the marking helper will pass the submission directory as argument. The helper expects the following information from the standard output (in the same order, each on a new line):
+
+- A path to the source file being marked
+- A number representing the corresponding marks
+- A single line providing feedback to the student
+- The student program's output (may contain several lines)
+
+The following represents an example marking script:
+
+```bash
+#!/bin/bash
+BASEDIR="$(dirname "$0")"
+DIRECTORY=$1
+SOURCE_FILE="$(find "$DIRECTORY" -regex '.*[P|p]1.c' | head -n 1)"
+
+if [ ! -f "$SOURCE_FILE" ]; then
+    >&2 echo "Source code for part 1 not found. Perhaps, the file was given a different name than expected."
+    exit 1
+fi
+
+# Compile the source code
+name=${SOURCE_FILE##*/}
+base=${name%.c}
+compilation="$(gcc "$SOURCE_FILE" -o "$DIRECTORY"/"$base".out)"
+if [ $? -ne 0 ]; then
+    exit 2
+fi
+
+# Execute the program and capture the output
+output="$("$DIRECTORY"/"$base".out)"
+
+# Print out the file to mark
+echo $SOURCE_FILE
+
+# Run the evaluator
+javac $BASEDIR/../src/P1.java
+java -cp $BASEDIR/../src P1 "$output"
+EXIT_CODE=$?
+
+# Print out the program's output and exit
+echo "$output"
+exit $EXIT_CODE
+```
+
+Notice that the script above delegates the marking (grade and feedback determination) to a Java class, but this can be done in the same script.
+
+The `EXIT_CODE` variable is used to detect any erroneous execution of the student's program. If the exit code is different than 0, the marking helper will report this as part of the feedback.
+
+##### Running the marking helper
+
+According to the project structure presented above, the command to run the marking helper is:
+
+```bash
+java -jar <path-top-target>/marking-helper.jar \
+    -d ./submissions \
+    -m ./submissions/P1.sh \
+    -m ./submissions/P2.sh \
+    -n ./submissions/naming.sh \
+    -u
+```
