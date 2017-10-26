@@ -19,16 +19,16 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.rigiresearch.markinghelper;
+package com.rigiresearch.gradebuddy;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.rigiresearch.markinghelper.io.AutomatedMarking;
-import com.rigiresearch.markinghelper.io.FileSubmissionProvider;
-import com.rigiresearch.markinghelper.model.CsvReport;
-import com.rigiresearch.markinghelper.model.Submission;
-import com.rigiresearch.markinghelper.ui.MainWindow;
+import com.rigiresearch.gradebuddy.io.AutomatedMarking;
+import com.rigiresearch.gradebuddy.io.FileSubmissionProvider;
+import com.rigiresearch.gradebuddy.model.CsvReport;
+import com.rigiresearch.gradebuddy.model.Submission;
+import com.rigiresearch.gradebuddy.ui.MainWindow;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

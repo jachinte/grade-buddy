@@ -19,11 +19,11 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.rigiresearch.markinghelper.ui;
+package com.rigiresearch.gradebuddy.ui;
 
-import com.rigiresearch.markinghelper.io.AutomatedMarking;
-import com.rigiresearch.markinghelper.model.Result;
-import com.rigiresearch.markinghelper.model.Submission;
+import com.rigiresearch.gradebuddy.io.AutomatedMarking;
+import com.rigiresearch.gradebuddy.model.Result;
+import com.rigiresearch.gradebuddy.model.Submission;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.Files;

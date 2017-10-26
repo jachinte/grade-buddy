@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
     <groupId>com.rigiresearch</groupId>
-    <artifactId>marking-helper</artifactId>
+    <artifactId>grade-buddy</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Marking helper</name>
+    <name>Grade Buddy</name>
     <description>Automated marking helper for programming assignments</description>
-    <url>https://github.com/jachinte/marking-helper</url>
+    <url>https://github.com/jachinte/grade-buddy</url>
     <inceptionYear>2017</inceptionYear>
     <organization>
         <name>University of Victoria</name>
@@ -35,12 +35,12 @@
     </developers>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/jachinte/marking-helper/issues</url>
+        <url>https://github.com/jachinte/grade-buddy/issues</url>
     </issueManagement>
     <scm>
-        <connection>scm:git:git@github.com:jachinte/examgen.git</connection>
-        <developerConnection>scm:git:git@github.com:jachinte/marking-helper.git</developerConnection>
-        <url>https://github.com/jachinte/marking-helper</url>
+        <connection>scm:git:git@github.com:jachinte/grade-buddy.git</connection>
+        <developerConnection>scm:git:git@github.com:jachinte/grade-buddy.git</developerConnection>
+        <url>https://github.com/jachinte/grade-buddy</url>
     </scm>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -98,7 +98,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.rigiresearch.markinghelper.Application</mainClass>
+                            <mainClass>com.rigiresearch.gradebuddy.Application</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -19,7 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.rigiresearch.markinghelper.model;
+package com.rigiresearch.gradebuddy.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.AllArgsConstructor;

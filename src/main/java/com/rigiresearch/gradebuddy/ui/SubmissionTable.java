@@ -19,9 +19,9 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.rigiresearch.markinghelper.ui;
+package com.rigiresearch.gradebuddy.ui;
 
-import com.rigiresearch.markinghelper.model.Submission;
+import com.rigiresearch.gradebuddy.model.Submission;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.util.List;

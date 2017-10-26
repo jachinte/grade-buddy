@@ -19,7 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.rigiresearch.markinghelper.ui;
+package com.rigiresearch.gradebuddy.ui;
 
 import java.awt.Component;
 import javax.swing.BorderFactory;

@@ -19,10 +19,10 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.rigiresearch.markinghelper.io;
+package com.rigiresearch.gradebuddy.io;
 
-import com.rigiresearch.markinghelper.model.Result;
-import com.rigiresearch.markinghelper.model.Submission;
+import com.rigiresearch.gradebuddy.model.Result;
+import com.rigiresearch.gradebuddy.model.Submission;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;

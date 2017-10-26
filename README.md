@@ -1,4 +1,4 @@
-# Marking Helper
+# Grade Buddy
 
 This project assists teaching assistants and professors in automating the marking of programming assignments. It runs custom marking scripts and allows to navigate through the submission files using a graphical user interface.
 
@@ -9,16 +9,16 @@ This project assists teaching assistants and professors in automating the markin
 First, clone or download this repository and then package the application artefacts using [Maven](https://maven.apache.org/):
 
 ```bash
-git clone https://github.com/jachinte/marking-helper ; cd marking-helper
+git clone https://github.com/jachinte/grade-buddy ; cd grade-buddy
 mvn package
 ```
 
 ### Run the application
 
-The marking helper is provided as a command-line application. Run it using the following command:
+The Grade Buddy is provided as a command-line application. Run it using the following command:
 
 ```bash
-java -jar target/marking-helper.jar --help
+java -jar target/grade-buddy.jar --help
 ```
 
 The previous command shows the application menu:
@@ -47,10 +47,10 @@ Usage: <main class> [options]
 
 ### Demo
 
-Run the following command to see the marking helper in action:
+Run the following command to see the Grade Buddy in action:
 
 ```bash
-java -jar target/marking-helper.jar \
+java -jar target/grade-buddy.jar \
     -d src/test/resources/simple-assignment \
     -m src/test/resources/simple-assignment/P1.sh \
     -m src/test/resources/simple-assignment/P2.sh \
@@ -84,7 +84,7 @@ Where `P1.sh` and `P2.sh` are marking scripts (part 1 and part 2), and `naming.s
 
 An ID provider is a script that returns a unique identifier given a submission directory. The ID may represent the student's ID.
 
-Before marking the files in a submission, the marking helper will run this script, passing the submission directory as argument. The following represents an example script:
+Before marking the files in a submission, the Grade Buddy will run this script, passing the submission directory as argument. The following represents an example script:
 
 ```bash
 #!/bin/bash
@@ -105,7 +105,7 @@ The previous code takes any C file from the submission directory and extracts th
 
 #### Marking files
 
-An assignment may be composed of several parts. You need to specify each part separate in the form of a shell script. When executing a marking script, the marking helper will pass the submission directory as argument. The helper expects the following information from the standard output (in the same order, each on a new line):
+An assignment may be composed of several parts. You need to specify each part separate in the form of a shell script. When executing a marking script, the Grade Buddy will pass the submission directory as argument. The Grade Buddy expects the following information from the standard output (in the same order, each on a new line):
 
 1. A path to the source file being marked
 2. A number representing the corresponding marks
@@ -151,11 +151,11 @@ exit $EXIT_CODE
 
 Notice that the script above delegates the marking (grade and feedback determination) to a Java class, but this can be done in the same script.
 
-The `EXIT_CODE` variable is used to detect any erroneous execution of the student's program. If the exit code is different than 0, the marking helper will report this as part of the feedback.
+The `EXIT_CODE` variable is used to detect any erroneous execution of the student's program. If the exit code is different than 0, the Grade Buddy will report this as part of the feedback.
 
-#### Running the marking helper
+#### Running the Grade Buddy
 
-According to the project structure presented above, the command to run the marking helper is:
+According to the project structure presented above, the command to run the Grade Buddy is:
 
 ```bash
 java -jar <path-to-target>/marking-helper.jar \
