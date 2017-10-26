@@ -24,17 +24,16 @@ java -jar target/grade-buddy.jar --help
 The previous command shows the application menu:
 
 ```bash
-The following options are required: [--marking-script | -m], [--directory | -d], [--naming-script | -n]
-Usage: <main class> [options]
+Usage: <program> [options]
   Options:
     --backup, -b
       A backup file containing a previous configuration
-  * --directory, -d
+    --directory, -d
       The directory containing the assignment submissions
-  * --marking-script, -m
+    --marking-script, -m
       A shell script to run over each submission
       Default: []
-  * --naming-script, -n
+    --naming-script, -n
       A shell script to extract the submission's id
     --exclude, -e
       Regular expression to exclude directories

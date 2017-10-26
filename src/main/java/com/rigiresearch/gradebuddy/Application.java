@@ -67,7 +67,6 @@ public class Application implements Runnable {
     @Parameter(
         names = {"--directory", "-d"},
         description = "The directory containing the assignment submissions",
-        required = true,
         order = 2
     )
     private String directory;
@@ -75,7 +74,6 @@ public class Application implements Runnable {
     @Parameter(
         names = {"--marking-script", "-m"},
         description = "A shell script to run over each submission",
-        required = true,
         order = 3
     )
     private List<String> markingScripts = new ArrayList<>();
@@ -83,7 +81,6 @@ public class Application implements Runnable {
     @Parameter(
         names = {"--naming-script", "-n"},
         description = "A shell script to extract the submission's id",
-        required = true,
         order = 4
     )
     private String namingScript;
@@ -127,6 +124,16 @@ public class Application implements Runnable {
             } else if (!app.parameters.isEmpty()) {
                 System.err.printf("Unknown parameter(s) %s\n", app.parameters);
                 System.exit(1);
+            } else if (app.backup == null && (
+                app.directory == null
+                || app.namingScript == null
+                || app.markingScripts.isEmpty())) {
+                System.err.println(
+                    "Expecting parameters Directory, Naming script, and "
+                    + "Marking script"
+                );
+                jc.usage();
+                System.exit(1);
             }
         } catch (ParameterException e) {
             System.err.println(e.getMessage());
@@ -141,11 +148,13 @@ public class Application implements Runnable {
      */
     public void validateArguments() {
         final List<String> paths = new ArrayList<>();
-        if (this.backup != null)
+        if (this.backup != null) {
             paths.add(this.backup);
-        paths.add(this.directory);
-        paths.add(this.namingScript);
-        paths.addAll(this.markingScripts);
+        } else {
+            paths.add(this.directory);
+            paths.add(this.namingScript);
+            paths.addAll(this.markingScripts);
+        }
         paths.stream().forEach(path -> {
             if (!new File(path).exists()) {
                 System.err.printf("Input path '%s' does not exist\n", path);
