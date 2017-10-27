@@ -175,6 +175,7 @@ DIRECTORY=$1
 # Open the text document from part 1
 open "$DIRECTORY/document.txt"
 ```
+As for marking scripts and ID providers, this script is passed the submission directory as argument.
 
 #### Running the Grade Buddy
 
