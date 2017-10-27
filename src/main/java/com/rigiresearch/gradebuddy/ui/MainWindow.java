@@ -22,14 +22,17 @@
 package com.rigiresearch.gradebuddy.ui;
 
 import com.rigiresearch.gradebuddy.io.AutomatedMarking;
+import com.rigiresearch.gradebuddy.io.Command;
 import com.rigiresearch.gradebuddy.model.Result;
 import com.rigiresearch.gradebuddy.model.Submission;
 import java.awt.BorderLayout;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.function.Function;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
@@ -86,6 +89,19 @@ public final class MainWindow extends JFrame {
     private SubmissionTable table;
 
     /**
+     * Script to run on submission selection.
+     */
+    private File selectionScript;
+
+    /**
+     * Updates the selection script.
+     * @param selectionScript the new script
+     */
+    public void selectionScript(final File selectionScript) {
+        this.selectionScript = selectionScript;
+    }
+
+    /**
      * Configures this window.
      * @throws IOException 
      */
@@ -118,14 +134,11 @@ public final class MainWindow extends JFrame {
                 public void valueChanged(ListSelectionEvent e) {
                     final ListSelectionModel model =
                         (ListSelectionModel) e.getSource();
-                    try {
-                        MainWindow.this.displayData(
-                            MainWindow.this.marking.submissions()
-                                .get(model.getMinSelectionIndex())
-                        );
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
+                    MainWindow.this.onSelectionChange(
+                        MainWindow.this.marking
+                            .submissions()
+                            .get(model.getMinSelectionIndex())
+                    );
                 }
             });
 
@@ -172,6 +185,20 @@ public final class MainWindow extends JFrame {
     }
 
     /**
+     * Executes actions on row selection.
+     * @param submission The currently selected submission
+     */
+    private void onSelectionChange(final Submission submission) {
+        try {
+            this.displayData(submission);
+            if (this.selectionScript != null)
+                this.runScript(submission);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Displays the source code and output of the submission files.
      * @param submission The selected submission
      * @throws IOException If the something goes wrong reading the files
@@ -206,6 +233,31 @@ public final class MainWindow extends JFrame {
                     )
                 );
             }
+        }
+    }
+
+    /**
+     * Executes the selection script.
+     * @param submission The currently selected submission
+     * @throws Exception See {@link Command#execute()}
+     */
+    private void runScript(final Submission submission) throws Exception {
+        Command c = new Command(
+            new String[]{
+                "sh",
+                this.selectionScript.getAbsolutePath(),
+                submission.directory().getAbsolutePath()
+            }
+        ).execute();
+        if (c.result().exitCode() != 0) {
+            System.out.println(c.result().outputStream().toString());
+            System.err.println(c.result().errorStream().toString());
+            JOptionPane.showMessageDialog(
+                this,
+                "Error executing script. Please read the error output.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 }

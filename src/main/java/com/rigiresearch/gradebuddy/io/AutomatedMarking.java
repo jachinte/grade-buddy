@@ -23,16 +23,13 @@ package com.rigiresearch.gradebuddy.io;
 
 import com.rigiresearch.gradebuddy.model.Result;
 import com.rigiresearch.gradebuddy.model.Submission;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.zeroturnaround.exec.ProcessExecutor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -104,22 +101,18 @@ public final class AutomatedMarking implements Serializable {
         String feedback = "";
         String output = "";
         try {
-            final ByteArrayOutputStream stdOutput = new ByteArrayOutputStream();
-            final ByteArrayOutputStream stdErr = new ByteArrayOutputStream();
-            final int exitCode = new ProcessExecutor()
-                .environment(System.getenv())
-                .directory(script.getParentFile())
-                .command("sh", script.getName(), submission.getAbsolutePath())
-                .timeout(60, TimeUnit.SECONDS)
-                .redirectOutput(stdOutput)
-                .redirectError(stdErr)
-                .readOutput(true)
-                .execute()
-                .getExitValue();
+            final Command command = new Command(
+                new String[] {
+                    "sh",
+                    script.getName(),
+                    submission.getAbsolutePath()
+                }
+            ).onDirectory(script.getParentFile())
+             .execute();
             final Result r = this.handleOutput(
-                exitCode,
-                stdOutput.toString(),
-                stdErr.toString()
+                command.result().exitCode(),
+                command.result().outputStream().toString(),
+                command.result().errorStream().toString()
             );
             file = r.markedFile();
             marks = r.marks();

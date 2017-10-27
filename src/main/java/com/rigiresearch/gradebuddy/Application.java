@@ -86,23 +86,31 @@ public class Application implements Runnable {
     private String namingScript;
 
     @Parameter(
+        names = {"--on-selected-script", "-s"},
+        description = "A shell script to be executed when a submission is "
+                + "selected (useful only when running the UI)",
+        order = 5
+    )
+    private String onSelectedScript;
+
+    @Parameter(
         names = {"--exclude", "-e"},
         description = "Regular expression to exclude directories",
-        order = 5
+        order = 6
     )
     private String exclusionRegexp = "";
 
     @Parameter(
         names = {"--ui", "-u"},
         description = "Open the graphical user interface",
-        order = 6
+        order = 7
     )
     private boolean ui = false;
 
     @Parameter(
         names = {"--help", "-h"},
         description = "Shows this message",
-        order = 7
+        order = 8
     )
     private boolean help = false;
 
@@ -148,6 +156,8 @@ public class Application implements Runnable {
      */
     public void validateArguments() {
         final List<String> paths = new ArrayList<>();
+        if (this.onSelectedScript != null)
+            paths.add(this.onSelectedScript);
         if (this.backup != null) {
             paths.add(this.backup);
         } else {
@@ -188,10 +198,13 @@ public class Application implements Runnable {
                 marker.mark();
             }
             if (this.ui) {
-                new MainWindow(marker).configure();
+                final MainWindow window = new MainWindow(marker);
+                if (this.onSelectedScript != null)
+                    window.selectionScript(new File(this.onSelectedScript));
+                window.configure();
             } else {
                 System.out.println(
-                    new CsvReport(marker.submissions()).report()
+                    new CsvReport(marker.submissions()).report(true)
                 );
             }
         } catch (Exception e) {

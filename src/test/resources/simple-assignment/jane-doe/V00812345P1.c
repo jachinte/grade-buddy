@@ -10,6 +10,9 @@
 #include <stdlib.h>
 
 int main(void) {
+    FILE* file = fopen("document.txt", "w");
+    fprintf(file, "This is a demo file. - Jane\n");
+    fclose(file);
     printf("This is A1 P1\n");
     return EXIT_SUCCESS;
 }
