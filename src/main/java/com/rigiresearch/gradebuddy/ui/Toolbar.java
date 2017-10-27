@@ -204,7 +204,7 @@ public final class Toolbar extends JPanel implements ActionListener {
                 Files.write(
                     Paths.get(file.getAbsolutePath()),
                     new CsvReport(this.marking.submissions())
-                        .report()
+                        .report(true)
                         .getBytes()
                 );
             } catch (IOException e1) {

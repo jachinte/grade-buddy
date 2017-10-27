@@ -47,7 +47,7 @@ public final class CsvReport {
      * The CSV report.
      * @return A valid CSV string
      */
-    public String report() {
+    public String report(final boolean useHTML) {
         StringBuilder builder = new StringBuilder();
         builder.append("StudentId,Marks,Feedback,Directory\n");
         submissions.forEach(submission -> {
@@ -57,7 +57,8 @@ public final class CsvReport {
             for (Result result : submission.results()) {
                 marks += result.marks();
                 feedback += String.format(
-                    "PART %d (%s): %s\n",
+                    useHTML ? "<p><b>PART %d (%s)</b>: %s</p>"
+                            : "PART %d (%s): %s\n",
                     i.getAndIncrement(),
                     result.markedFile().getName(),
                     result.feedback().isEmpty() ?
