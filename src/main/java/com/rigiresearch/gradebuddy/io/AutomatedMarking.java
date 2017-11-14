@@ -27,12 +27,16 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import me.tongfei.progressbar.ProgressBar;
 
 /**
  * This class is in charge of coordinating the automated marking.
@@ -63,11 +67,28 @@ public final class AutomatedMarking implements Serializable {
 
     /**
      * Marks all of the submissions.
+     * @param threads The thread-pool size to use in marking the assignments
      */
-    public void mark() throws Exception {
-        for (Submission submission : this.submissions) {
-            submission.results(this.markingResults(submission.directory()));
+    public void mark(final int threads) throws Exception {
+        final ProgressBar pb = new ProgressBar("Marking", this.submissions.size());
+        pb.start();
+        final CountDownLatch latch = new CountDownLatch(this.submissions.size());
+        final ExecutorService service = Executors.newFixedThreadPool(threads);
+        for (Submission s : this.submissions) {
+            service.submit(() -> {
+                try {
+                    s.results(this.markingResults(s.directory()));
+                    pb.step();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    latch.countDown();
+                }
+            });
         }
+        service.shutdown();
+        latch.await();
+        pb.stop();
     }
 
     /**

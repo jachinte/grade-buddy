@@ -90,6 +90,12 @@
 			<version>1.2.17</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- Progress bar -->
+		<dependency>
+			<groupId>me.tongfei</groupId>
+			<artifactId>progressbar</artifactId>
+			<version>0.5.5</version>
+		</dependency>
     </dependencies>
 	<build>
 	   <plugins>

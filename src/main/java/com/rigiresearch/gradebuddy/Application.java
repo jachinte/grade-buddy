@@ -108,9 +108,16 @@ public class Application implements Runnable {
     private boolean ui = false;
 
     @Parameter(
+        names = {"--thread-pool", "-t"},
+        description = "The thread-pool size to use in marking the submissions",
+        order = 8
+    )
+    private int threads = 20;
+
+    @Parameter(
         names = {"--help", "-h"},
         description = "Shows this message",
-        order = 8
+        order = 9
     )
     private boolean help = false;
 
@@ -195,7 +202,7 @@ public class Application implements Runnable {
                         .map(script -> new File(script))
                         .collect(Collectors.toList())
                 );
-                marker.mark();
+                marker.mark(this.threads);
             }
             if (this.ui) {
                 final MainWindow window = new MainWindow(marker);
