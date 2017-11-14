@@ -28,6 +28,7 @@ java -jar target/grade-buddy.jar --help
 The previous command shows the application menu:
 
 ```bash
+Expecting parameters Directory, Naming script, and Marking script
 Usage: <program> [options]
   Options:
     --backup, -b
@@ -48,6 +49,9 @@ Usage: <program> [options]
     --ui, -u
       Open the graphical user interface
       Default: false
+    --thread-pool, -t
+      The thread-pool size to use in marking the submissions
+      Default: 20
     --help, -h
       Shows this message
       Default: false
