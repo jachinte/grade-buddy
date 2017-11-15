@@ -112,7 +112,7 @@ public class Application implements Runnable {
         description = "The thread-pool size to use in marking the submissions",
         order = 8
     )
-    private int threads = 20;
+    private int threads = 1;
 
     @Parameter(
         names = {"--help", "-h"},
