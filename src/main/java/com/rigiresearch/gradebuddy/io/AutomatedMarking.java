@@ -27,8 +27,8 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -79,9 +79,8 @@ public final class AutomatedMarking implements Serializable {
             threads,
             0L,
             TimeUnit.MILLISECONDS,
-            new SynchronousQueue<Runnable>(),
-            // This reduces the amount of GC activity
-            new ThreadPoolExecutor.DiscardPolicy()
+            new ArrayBlockingQueue<>(threads),
+            new ThreadPoolExecutor.CallerRunsPolicy()
         );
         for (Submission s : this.submissions) {
             executor.submit(() -> {
