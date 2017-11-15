@@ -28,8 +28,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,9 +74,17 @@ public final class AutomatedMarking implements Serializable {
         final ProgressBar pb = new ProgressBar("Marking", this.submissions.size());
         pb.start();
         final CountDownLatch latch = new CountDownLatch(this.submissions.size());
-        final ExecutorService service = Executors.newFixedThreadPool(threads);
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            threads,
+            threads,
+            0L,
+            TimeUnit.MILLISECONDS,
+            new SynchronousQueue<Runnable>(),
+            // This reduces the amount of GC activity
+            new ThreadPoolExecutor.DiscardPolicy()
+        );
         for (Submission s : this.submissions) {
-            service.submit(() -> {
+            executor.submit(() -> {
                 try {
                     s.results(this.markingResults(s.directory()));
                     pb.step();
@@ -86,7 +95,7 @@ public final class AutomatedMarking implements Serializable {
                 }
             });
         }
-        service.shutdown();
+        executor.shutdown();
         latch.await();
         pb.stop();
     }
