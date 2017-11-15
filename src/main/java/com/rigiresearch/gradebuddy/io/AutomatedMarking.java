@@ -67,27 +67,21 @@ public final class AutomatedMarking implements Serializable {
     private final List<File> scripts;
 
     /**
-     * Marks all of the submissions.
+     * The timeout.
      */
-    public void mark() throws Exception {
-        final ProgressBar pb = new ProgressBar("Marking", this.submissions.size());
-        pb.start();
-        for (Submission s : this.submissions) {
-            s.results(this.markingResults(s.directory()));
-            pb.step();
-        }
-        pb.stop();
-    }
+    private final long timeout;
+
+    /**
+     * The timeout unit.
+     */
+    private final TimeUnit unit;
 
     /**
      * Marks all of the submissions.
      * @param threads The thread-pool size to use in marking the assignments
      */
-    public void mark(final int threads) throws Exception {
-        if (threads == 1) {
-            this.mark();
-            return;
-        }
+    public void mark(final int threads)
+        throws Exception {
         final ProgressBar pb = new ProgressBar("Marking", this.submissions.size());
         pb.start();
         final CountDownLatch latch = new CountDownLatch(this.submissions.size());
@@ -127,7 +121,9 @@ public final class AutomatedMarking implements Serializable {
         throws Exception {
         List<Result> results = new ArrayList<>();
         for (File script : this.scripts) {
-            results.add(this.markingResult(submission, script));
+            results.add(
+                this.markingResult(submission, script)
+            );
         }
         return results;
     }
@@ -154,7 +150,7 @@ public final class AutomatedMarking implements Serializable {
                     submission.getAbsolutePath()
                 }
             ).onDirectory(script.getParentFile())
-             .execute();
+             .execute(this.timeout, this.unit);
             final Result r = this.handleOutput(
                 command.result().exitCode(),
                 command.result().outputStream().toString(),

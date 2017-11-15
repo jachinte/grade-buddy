@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -108,16 +109,23 @@ public class Application implements Runnable {
     private boolean ui = false;
 
     @Parameter(
+        names = {"--timeout", "-to"},
+        description = "The timeout for each submission part (in milliseconds)",
+        order = 8
+    )
+    private int timeout = 60000;
+
+    @Parameter(
         names = {"--thread-pool", "-t"},
         description = "The thread-pool size to use in marking the submissions",
-        order = 8
+        order = 9
     )
     private int threads = 1;
 
     @Parameter(
         names = {"--help", "-h"},
         description = "Shows this message",
-        order = 9
+        order = 10
     )
     private boolean help = false;
 
@@ -200,7 +208,9 @@ public class Application implements Runnable {
                     submissions,
                     this.markingScripts.stream()
                         .map(script -> new File(script))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                    this.timeout,
+                    TimeUnit.MILLISECONDS
                 );
                 marker.mark(this.threads);
             }

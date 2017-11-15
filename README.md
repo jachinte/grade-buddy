@@ -49,9 +49,12 @@ Usage: <program> [options]
     --ui, -u
       Open the graphical user interface
       Default: false
+    --timeout, -to
+      The timeout for each submission part (in milliseconds)
+      Default: 60000
     --thread-pool, -t
       The thread-pool size to use in marking the submissions
-      Default: 20
+      Default: 1
     --help, -h
       Shows this message
       Default: false
