@@ -68,9 +68,26 @@ public final class AutomatedMarking implements Serializable {
 
     /**
      * Marks all of the submissions.
+     */
+    public void mark() throws Exception {
+        final ProgressBar pb = new ProgressBar("Marking", this.submissions.size());
+        pb.start();
+        for (Submission s : this.submissions) {
+            s.results(this.markingResults(s.directory()));
+            pb.step();
+        }
+        pb.stop();
+    }
+
+    /**
+     * Marks all of the submissions.
      * @param threads The thread-pool size to use in marking the assignments
      */
     public void mark(final int threads) throws Exception {
+        if (threads == 1) {
+            this.mark();
+            return;
+        }
         final ProgressBar pb = new ProgressBar("Marking", this.submissions.size());
         pb.start();
         final CountDownLatch latch = new CountDownLatch(this.submissions.size());
