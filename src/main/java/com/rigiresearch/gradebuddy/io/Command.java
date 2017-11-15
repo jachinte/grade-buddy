@@ -123,6 +123,9 @@ public final class Command implements Serializable {
             .redirectOutput(outputStream)
             .redirectError(errorStream)
             .readOutput(true)
+            .stopper((process) -> {
+                process.destroyForcibly();
+            })
             .execute()
             .getExitValue();
         this.result = new Result(
