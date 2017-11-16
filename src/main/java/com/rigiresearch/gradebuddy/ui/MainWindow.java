@@ -132,6 +132,8 @@ public final class MainWindow extends JFrame {
             .addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
+                    if (e.getValueIsAdjusting())
+                        return;
                     final ListSelectionModel model =
                         (ListSelectionModel) e.getSource();
                     MainWindow.this.onSelectionChange(
