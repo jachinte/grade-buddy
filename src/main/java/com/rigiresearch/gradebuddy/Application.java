@@ -113,7 +113,7 @@ public class Application implements Runnable {
         description = "The timeout for each submission part (in milliseconds)",
         order = 8
     )
-    private int timeout = 60000;
+    private long timeout = 60000;
 
     @Parameter(
         names = {"--thread-pool", "-t"},
